@@ -12,13 +12,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Hemovida',
+      title: 'Clone do twitter',
       theme: ThemeData(
-        primarySwatch: Colors.red,
-        scaffoldBackgroundColor: Colors.grey[100],
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 8),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const Profile(),
     );
   }
 }

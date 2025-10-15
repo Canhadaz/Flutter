@@ -1,69 +1,85 @@
 import 'package:flutter/material.dart';
-import './Header.dart';
-import './Banner.dart';
-import './map.dart';
-import './cards.dart';
-import './donationbutton.dart';
+import './profile_page.dart';
+import '../mockdata/general.dart';
+import 'post.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class Profile extends StatefulWidget {
+  const Profile({super.key});
+
+  @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+  int visibleCount = 3; // mostra 5 posts no início
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const HeaderWithSearch(),
-              const SizedBox(height: 16),
+    final visiblePosts = posts.take(visibleCount).toList();
 
-              // Banner carrossel
-              SizedBox(
-                height: 160,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    BannerWidget(title: "Doe sangue, salve vidas!", imagePath: 'assets/img_1.jpg'),
-                    BannerWidget(title: "Julho Vermelho: Participe!", imagePath: 'assets/img_2.jpg'),
-                    BannerWidget(title: "Um gesto simples, um impacto gigante.", imagePath: 'assets/img_3.jpg'),
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 0, 0, 8),
+      body: Stack(
+        children: [
+          // ===== LISTA PRINCIPAL =====
+          ListView.builder(
+            itemCount: visiblePosts.length + 1, // +1 para o banner
+            itemBuilder: (context, index) {
+              if (index == 0) return const ProfileBanner(user: currentUser);
+
+              final postContent = visiblePosts[index - 1];
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+                child: Column(
+                  children: [
+                    Post(user: currentUser, content: postContent),
+                    Divider(
+                      color: const Color.fromARGB(115, 255, 255, 255),
+                      thickness: 0.7, // linha bem fina
+                      height: 8,      // espaçamento entre posts
+                      indent: 0,       // sem recuo
+                      endIndent: 0,
+                    ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // Botão agendar doação
-              const DonationButton(text: "Agendar Doação"),
-              const SizedBox(height: 16),
-
-              // 3 cards em linha
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  SquareValueCard(value: "5", title: "Doações"),
-                  SquareValueCard(value: "15", title: "Vidas Salvas"),
-                  SquareValueCard(value: "3", title: "Streak"),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Circular counter e card genérico
-              Row(
-                children: const [
-                  CircularCounter(value: 7),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: GenericTitleCard(title: "Próxima doação em breve!"),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const MapaWidget(),
-            ],
+              );
+            },
           ),
-        ),
+
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8, // evita status bar
+            left: 16,
+            child: CircleAvatar(
+              backgroundColor: Colors.black54,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+
+          if (visibleCount < posts.length)
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      visibleCount += 6; // carrega mais posts
+                    });
+                  },
+                  child: const Text(
+                    'Ver mais',
+                    style: TextStyle(
+                        color: Color.fromARGB(190, 255, 255, 255)),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
