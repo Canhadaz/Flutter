@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './profile_page.dart';
 import '../mockdata/general.dart';
 import 'post.dart';
+import './timeline.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -15,7 +16,7 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final visiblePosts = posts.take(visibleCount).toList();
+    final visiblePosts = currentUser.posts.take(visibleCount).toList();
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 0, 0, 8),
@@ -27,7 +28,7 @@ class _ProfileState extends State<Profile> {
             itemBuilder: (context, index) {
               if (index == 0) return const ProfileBanner(user: currentUser);
 
-              final postContent = visiblePosts[index - 1];
+              final postContent = visiblePosts[index - 1].content;
               return Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
@@ -52,14 +53,17 @@ class _ProfileState extends State<Profile> {
             left: 16,
             child: CircleAvatar(
               backgroundColor: Colors.black54,
-              child: IconButton(
+                child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Timeline()),
+                ),
               ),
             ),
           ),
 
-          if (visibleCount < posts.length)
+          if (visibleCount < currentUser.posts.length)
             Positioned(
               bottom: 16,
               left: 0,
